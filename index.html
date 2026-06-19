@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL &amp; MongoDB — Complete Query Reference</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 50px 60px;
+      background: #fff;
+      color: #000;
+      line-height: 1.7;
+    }
+
+    h1 {
+      font-size: 28px;
+      border-bottom: 3px solid #000;
+      padding-bottom: 12px;
+      margin-bottom: 10px;
+    }
+
+    .doc-subtitle {
+      font-size: 14px;
+      margin-bottom: 36px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: bold;
+      background: #000;
+      color: #fff;
+      padding: 8px 14px;
+      margin-top: 56px;
+      margin-bottom: 24px;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 5px;
+      margin-top: 40px;
+      margin-bottom: 14px;
+    }
+
+    .label {
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 22px;
+      margin-bottom: 5px;
+    }
+
+    .note {
+      font-size: 13px;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+
+    pre {
+      border: 1px solid #999;
+      padding: 15px 18px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      white-space: pre;
+      margin: 6px 0 0 0;
+      background: #f7f7f7;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 8px 0 0 0;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 6px 14px;
+      text-align: left;
+    }
+
+    th {
+      font-weight: bold;
+      background: #e8e8e8;
+    }
+
+    td.null { font-style: italic; }
+
+    .query-block {
+      border-left: 3px solid #000;
+      padding-left: 18px;
+      margin-top: 28px;
+      margin-bottom: 4px;
+    }
+
+    .result-label {
+      font-size: 13px;
+      font-style: italic;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    hr {
+      border: none;
+      border-top: 2px solid #000;
+      margin: 56px 0;
+    }
+
+    .toc {
+      border: 1px solid #000;
+      padding: 18px 24px;
+      display: inline-block;
+      margin-bottom: 44px;
+      font-size: 13.5px;
+      min-width: 380px;
+    }
+
+    .toc .toc-title {
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toc a {
+      color: #000;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .toc a:hover { text-decoration: underline; }
+    .toc .sub  { margin-left: 18px; }
+    .toc .sub2 { margin-left: 32px; }
+    .toc .sep  { margin-top: 8px; }
+
+    .schema-box {
+      border: 1px solid #000;
+      padding: 14px 18px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin-bottom: 16px;
+      background: #f7f7f7;
+    }
+
+    .inline-note {
+      font-size: 12.5px;
+      font-style: italic;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>SQL &amp; MongoDB — Complete Query Reference</h1>
+<div class="doc-subtitle">
+  Schema: Students, Courses, Enrollments &mdash; covering COUNT, SUM, MIN, MAX, AVG, GROUP BY, HAVING, all JOINs, LIKE, BETWEEN, IN, DISTINCT, ORDER BY, and Subqueries, with full MongoDB equivalents.
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <div class="toc-title">Contents</div>
+
+  <a href="#schema">Schema Overview</a>
+
+  <a href="#sql" class="sep">PART 1 — SQL</a>
+  <a href="#sql-create"  class="sub">1.1  Create Tables</a>
+  <a href="#sql-insert"  class="sub">1.2  Insert Records</a>
+  <a href="#sql-agg"     class="sub">1.3  Aggregate Functions</a>
+  <a href="#sql-count"   class="sub2">— COUNT</a>
+  <a href="#sql-sum"     class="sub2">— SUM</a>
+  <a href="#sql-min"     class="sub2">— MIN</a>
+  <a href="#sql-max"     class="sub2">— MAX</a>
+  <a href="#sql-avg"     class="sub2">— AVG</a>
+  <a href="#sql-groupby" class="sub">1.4  GROUP BY</a>
+  <a href="#sql-having"  class="sub">1.5  HAVING</a>
+  <a href="#sql-joins"   class="sub">1.6  JOINs (INNER, LEFT, RIGHT)</a>
+  <a href="#sql-filter"  class="sub">1.7  Filtering (WHERE, AND, OR, LIKE, BETWEEN, IN)</a>
+  <a href="#sql-other"   class="sub">1.8  DISTINCT, ORDER BY, Subquery</a>
+
+  <a href="#mongo" class="sep">PART 2 — MongoDB</a>
+  <a href="#mongo-insert"  class="sub">2.1  Insert Documents</a>
+  <a href="#mongo-agg"     class="sub">2.2  Aggregate Functions</a>
+  <a href="#mongo-groupby" class="sub">2.3  $group (GROUP BY)</a>
+  <a href="#mongo-having"  class="sub">2.4  HAVING equivalent</a>
+  <a href="#mongo-lookup"  class="sub">2.5  $lookup (JOIN)</a>
+  <a href="#mongo-filter"  class="sub">2.6  Filtering ($match, $regex, $in)</a>
+  <a href="#mongo-other"   class="sub">2.7  distinct, $sort, Subquery-like</a>
+</div>
+
+<!-- ======================== SCHEMA ======================== -->
+<h3 id="schema">Schema Overview</h3>
+<div class="schema-box">
+Students    ( id, name, gender, age )<br>
+Courses     ( id, name, instructor )<br>
+Enrollments ( id, studentid → Students.id, courseid → Courses.id, grade, marks )
+</div>
+<div class="note">Note: <strong>marks</strong> (integer, 0–100) is added to Enrollments to support SUM / AVG / MIN / MAX examples on a meaningful numeric field.</div>
+<div class="note">Note: Student <strong>S106 Frank</strong> has no enrollment (demonstrates LEFT JOIN NULL row). Course <strong>C104 Biology</strong> has no students (demonstrates RIGHT JOIN NULL row).</div>
+
+
+<!-- ========================================================== -->
+<!--                      PART 1 — SQL                          -->
+<!-- ========================================================== -->
+<h2 id="sql">PART 1 — SQL</h2>
+
+
+<!-- 1.1 CREATE TABLES -->
+<h3 id="sql-create">1.1 Create Tables</h3>
+
+<div class="label">Students</div>
+<pre>CREATE TABLE Students (
+    id      VARCHAR(10)  PRIMARY KEY,
+    name    VARCHAR(100) NOT NULL,
+    gender  VARCHAR(10),
+    age     INT
+);</pre>
+
+<div class="label">Courses</div>
+<pre>CREATE TABLE Courses (
+    id         VARCHAR(10)  PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL,
+    instructor VARCHAR(100)
+);</pre>
+
+<div class="label">Enrollments</div>
+<pre>CREATE TABLE Enrollments (
+    id        VARCHAR(10) PRIMARY KEY,
+    studentid VARCHAR(10) REFERENCES Students(id),
+    courseid  VARCHAR(10) REFERENCES Courses(id),
+    grade     VARCHAR(5),
+    marks     INT
+);</pre>
+
+
+<!-- 1.2 INSERT RECORDS -->
+<h3 id="sql-insert">1.2 Insert Records</h3>
+
+<div class="label">Students</div>
+<pre>INSERT INTO Students (id, name, gender, age) VALUES
+    ('S101', 'Alice', 'Female', 20),
+    ('S102', 'Bob',   'Male',   22),
+    ('S103', 'Carol', 'Female', 19),
+    ('S104', 'David', 'Male',   21),
+    ('S105', 'Emma',  'Female', 23),
+    ('S106', 'Frank', 'Male',   24);</pre>
+
+<table>
+  <tr><th>id</th><th>name</th><th>gender</th><th>age</th></tr>
+  <tr><td>S101</td><td>Alice</td><td>Female</td><td>20</td></tr>
+  <tr><td>S102</td><td>Bob</td><td>Male</td><td>22</td></tr>
+  <tr><td>S103</td><td>Carol</td><td>Female</td><td>19</td></tr>
+  <tr><td>S104</td><td>David</td><td>Male</td><td>21</td></tr>
+  <tr><td>S105</td><td>Emma</td><td>Female</td><td>23</td></tr>
+  <tr><td>S106</td><td>Frank</td><td>Male</td><td>24</td></tr>
+</table>
+
+<div class="label">Courses</div>
+<pre>INSERT INTO Courses (id, name, instructor) VALUES
+    ('C101', 'Mathematics', 'Dr. Smith'),
+    ('C102', 'Physics',     'Dr. Jones'),
+    ('C103', 'Chemistry',   'Dr. Brown'),
+    ('C104', 'Biology',     'Dr. White');</pre>
+
+<table>
+  <tr><th>id</th><th>name</th><th>instructor</th></tr>
+  <tr><td>C101</td><td>Mathematics</td><td>Dr. Smith</td></tr>
+  <tr><td>C102</td><td>Physics</td><td>Dr. Jones</td></tr>
+  <tr><td>C103</td><td>Chemistry</td><td>Dr. Brown</td></tr>
+  <tr><td>C104</td><td>Biology</td><td>Dr. White</td></tr>
+</table>
+
+<div class="label">Enrollments</div>
+<pre>INSERT INTO Enrollments (id, studentid, courseid, grade, marks) VALUES
+    ('E001', 'S101', 'C101', 'A',  88),
+    ('E002', 'S102', 'C101', 'B',  74),
+    ('E003', 'S103', 'C102', 'A',  91),
+    ('E004', 'S104', 'C103', 'C',  62),
+    ('E005', 'S105', 'C101', 'B',  78),
+    ('E006', 'S101', 'C103', 'A',  85),
+    ('E007', 'S102', 'C102', 'B',  76),
+    ('E008', 'S103', 'C101', 'A',  90);</pre>
+
+<table>
+  <tr><th>id</th><th>studentid</th><th>courseid</th><th>grade</th><th>marks</th></tr>
+  <tr><td>E001</td><td>S101</td><td>C101</td><td>A</td><td>88</td></tr>
+  <tr><td>E002</td><td>S102</td><td>C101</td><td>B</td><td>74</td></tr>
+  <tr><td>E003</td><td>S103</td><td>C102</td><td>A</td><td>91</td></tr>
+  <tr><td>E004</td><td>S104</td><td>C103</td><td>C</td><td>62</td></tr>
+  <tr><td>E005</td><td>S105</td><td>C101</td><td>B</td><td>78</td></tr>
+  <tr><td>E006</td><td>S101</td><td>C103</td><td>A</td><td>85</td></tr>
+  <tr><td>E007</td><td>S102</td><td>C102</td><td>B</td><td>76</td></tr>
+  <tr><td>E008</td><td>S103</td><td>C101</td><td>A</td><td>90</td></tr>
+</table>
+
+
+<!-- 1.3 AGGREGATE FUNCTIONS -->
+<h3 id="sql-agg">1.3 Aggregate Functions</h3>
+
+<!-- COUNT -->
+<div class="label" id="sql-count">COUNT — Total number of rows</div>
+
+<div class="query-block">
+  <div class="label">Count total students</div>
+  <pre>SELECT COUNT(*) AS total_students
+FROM   Students;</pre>
+  <div class="result-label">Result:</div>
+  <table><tr><th>total_students</th></tr><tr><td>6</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">Count total enrollments</div>
+  <pre>SELECT COUNT(*) AS total_enrollments
+FROM   Enrollments;</pre>
+  <div class="result-label">Result:</div>
+  <table><tr><th>total_enrollments</th></tr><tr><td>8</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">Count students by gender</div>
+  <pre>SELECT gender, COUNT(*) AS count
+FROM   Students
+GROUP  BY gender;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>gender</th><th>count</th></tr>
+    <tr><td>Female</td><td>3</td></tr>
+    <tr><td>Male</td><td>3</td></tr>
+  </table>
+</div>
+
+<!-- SUM -->
+<div class="label" id="sql-sum">SUM — Total of numeric values</div>
+
+<div class="query-block">
+  <div class="label">Total marks across all enrollments</div>
+  <pre>SELECT SUM(marks) AS total_marks
+FROM   Enrollments;</pre>
+  <div class="result-label">Result: (88+74+91+62+78+85+76+90 = 644)</div>
+  <table><tr><th>total_marks</th></tr><tr><td>644</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">Total marks scored in Mathematics (C101)</div>
+  <pre>SELECT SUM(marks) AS total_marks
+FROM   Enrollments
+WHERE  courseid = 'C101';</pre>
+  <div class="result-label">Result: (88+74+78+90 = 330)</div>
+  <table><tr><th>total_marks</th></tr><tr><td>330</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">Total marks per course</div>
+  <pre>SELECT   courseid, SUM(marks) AS total_marks
+FROM     Enrollments
+GROUP BY courseid;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>total_marks</th></tr>
+    <tr><td>C101</td><td>330</td></tr>
+    <tr><td>C102</td><td>167</td></tr>
+    <tr><td>C103</td><td>147</td></tr>
+  </table>
+</div>
+
+<!-- MIN -->
+<div class="label" id="sql-min">MIN — Smallest value in a column</div>
+
+<div class="query-block">
+  <div class="label">Youngest student</div>
+  <pre>SELECT MIN(age) AS youngest_age
+FROM   Students;</pre>
+  <div class="result-label">Result:</div>
+  <table><tr><th>youngest_age</th></tr><tr><td>19</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">Lowest marks in each course</div>
+  <pre>SELECT   courseid, MIN(marks) AS lowest_marks
+FROM     Enrollments
+GROUP BY courseid;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>lowest_marks</th></tr>
+    <tr><td>C101</td><td>74</td></tr>
+    <tr><td>C102</td><td>76</td></tr>
+    <tr><td>C103</td><td>62</td></tr>
+  </table>
+</div>
+
+<!-- MAX -->
+<div class="label" id="sql-max">MAX — Largest value in a column</div>
+
+<div class="query-block">
+  <div class="label">Oldest student</div>
+  <pre>SELECT MAX(age) AS oldest_age
+FROM   Students;</pre>
+  <div class="result-label">Result:</div>
+  <table><tr><th>oldest_age</th></tr><tr><td>24</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">Highest marks in each course</div>
+  <pre>SELECT   courseid, MAX(marks) AS highest_marks
+FROM     Enrollments
+GROUP BY courseid;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>highest_marks</th></tr>
+    <tr><td>C101</td><td>90</td></tr>
+    <tr><td>C102</td><td>91</td></tr>
+    <tr><td>C103</td><td>85</td></tr>
+  </table>
+</div>
+
+<!-- AVG -->
+<div class="label" id="sql-avg">AVG — Average of numeric values</div>
+
+<div class="query-block">
+  <div class="label">Average age of all students</div>
+  <pre>SELECT AVG(age) AS avg_age
+FROM   Students;</pre>
+  <div class="result-label">Result: ((20+22+19+21+23+24)/6 = 21.5)</div>
+  <table><tr><th>avg_age</th></tr><tr><td>21.5</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">Average marks per course</div>
+  <pre>SELECT   courseid, AVG(marks) AS avg_marks
+FROM     Enrollments
+GROUP BY courseid;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>avg_marks</th></tr>
+    <tr><td>C101</td><td>82.50</td></tr>
+    <tr><td>C102</td><td>83.50</td></tr>
+    <tr><td>C103</td><td>73.50</td></tr>
+  </table>
+</div>
+
+
+<!-- 1.4 GROUP BY -->
+<h3 id="sql-groupby">1.4 GROUP BY</h3>
+
+<div class="query-block">
+  <div class="label">Number of enrollments per course</div>
+  <pre>SELECT   courseid,
+         COUNT(*) AS total_enrollments
+FROM     Enrollments
+GROUP BY courseid
+ORDER BY total_enrollments DESC;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>total_enrollments</th></tr>
+    <tr><td>C101</td><td>4</td></tr>
+    <tr><td>C102</td><td>2</td></tr>
+    <tr><td>C103</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">MIN, MAX, AVG, SUM of marks grouped by course</div>
+  <pre>SELECT   courseid,
+         COUNT(*)    AS enrollments,
+         SUM(marks)  AS total_marks,
+         MIN(marks)  AS min_marks,
+         MAX(marks)  AS max_marks,
+         AVG(marks)  AS avg_marks
+FROM     Enrollments
+GROUP BY courseid;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>enrollments</th><th>total_marks</th><th>min_marks</th><th>max_marks</th><th>avg_marks</th></tr>
+    <tr><td>C101</td><td>4</td><td>330</td><td>74</td><td>90</td><td>82.50</td></tr>
+    <tr><td>C102</td><td>2</td><td>167</td><td>76</td><td>91</td><td>83.50</td></tr>
+    <tr><td>C103</td><td>2</td><td>147</td><td>62</td><td>85</td><td>73.50</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">Number of students per gender</div>
+  <pre>SELECT   gender, COUNT(*) AS count
+FROM     Students
+GROUP BY gender;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>gender</th><th>count</th></tr>
+    <tr><td>Female</td><td>3</td></tr>
+    <tr><td>Male</td><td>3</td></tr>
+  </table>
+</div>
+
+
+<!-- 1.5 HAVING -->
+<h3 id="sql-having">1.5 HAVING</h3>
+<div class="note">HAVING filters groups after GROUP BY. WHERE cannot be used with aggregate functions — use HAVING instead.</div>
+
+<div class="query-block">
+  <div class="label">Courses with more than 2 enrollments</div>
+  <pre>SELECT   courseid, COUNT(*) AS total_enrollments
+FROM     Enrollments
+GROUP BY courseid
+HAVING   COUNT(*) > 2;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>total_enrollments</th></tr>
+    <tr><td>C101</td><td>4</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">Courses where average marks are above 80</div>
+  <pre>SELECT   courseid, AVG(marks) AS avg_marks
+FROM     Enrollments
+GROUP BY courseid
+HAVING   AVG(marks) > 80;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>avg_marks</th></tr>
+    <tr><td>C101</td><td>82.50</td></tr>
+    <tr><td>C102</td><td>83.50</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">Courses where total marks scored exceed 200</div>
+  <pre>SELECT   courseid, SUM(marks) AS total_marks
+FROM     Enrollments
+GROUP BY courseid
+HAVING   SUM(marks) > 200;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th><th>total_marks</th></tr>
+    <tr><td>C101</td><td>330</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">Genders with average student age above 21</div>
+  <pre>SELECT   gender, AVG(age) AS avg_age
+FROM     Students
+GROUP BY gender
+HAVING   AVG(age) > 21;</pre>
+  <div class="result-label">Result: Male avg = (22+21+24)/3 = 22.33 ; Female avg = (20+19+23)/3 = 20.67</div>
+  <table>
+    <tr><th>gender</th><th>avg_age</th></tr>
+    <tr><td>Male</td><td>22.33</td></tr>
+  </table>
+</div>
+
+
+<!-- 1.6 JOINS -->
+<h3 id="sql-joins">1.6 JOINs</h3>
+<div class="note">INNER JOIN returns only matched rows. LEFT JOIN keeps all rows from the left table. RIGHT JOIN keeps all rows from the right table.</div>
+
+<div class="query-block">
+  <div class="label">INNER JOIN — Students with their enrolled courses and marks</div>
+  <pre>SELECT s.name    AS student_name,
+       c.name    AS course_name,
+       e.grade,
+       e.marks
+FROM   Students    s
+JOIN   Enrollments e ON s.id = e.studentid
+JOIN   Courses     c ON c.id = e.courseid
+ORDER BY s.name;</pre>
+  <div class="result-label">Result: (only enrolled students appear — Frank is excluded)</div>
+  <table>
+    <tr><th>student_name</th><th>course_name</th><th>grade</th><th>marks</th></tr>
+    <tr><td>Alice</td><td>Mathematics</td><td>A</td><td>88</td></tr>
+    <tr><td>Alice</td><td>Chemistry</td><td>A</td><td>85</td></tr>
+    <tr><td>Bob</td><td>Mathematics</td><td>B</td><td>74</td></tr>
+    <tr><td>Bob</td><td>Physics</td><td>B</td><td>76</td></tr>
+    <tr><td>Carol</td><td>Physics</td><td>A</td><td>91</td></tr>
+    <tr><td>Carol</td><td>Mathematics</td><td>A</td><td>90</td></tr>
+    <tr><td>David</td><td>Chemistry</td><td>C</td><td>62</td></tr>
+    <tr><td>Emma</td><td>Mathematics</td><td>B</td><td>78</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">LEFT JOIN — All students, including those not enrolled in any course</div>
+  <pre>SELECT s.name  AS student_name,
+       c.name  AS course_name,
+       e.marks
+FROM   Students    s
+LEFT JOIN Enrollments e ON s.id = e.studentid
+LEFT JOIN Courses     c ON c.id = e.courseid
+ORDER BY s.name;</pre>
+  <div class="result-label">Result: (Frank appears with NULL since he has no enrollment)</div>
+  <table>
+    <tr><th>student_name</th><th>course_name</th><th>marks</th></tr>
+    <tr><td>Alice</td><td>Mathematics</td><td>88</td></tr>
+    <tr><td>Alice</td><td>Chemistry</td><td>85</td></tr>
+    <tr><td>Bob</td><td>Mathematics</td><td>74</td></tr>
+    <tr><td>Bob</td><td>Physics</td><td>76</td></tr>
+    <tr><td>Carol</td><td>Physics</td><td>91</td></tr>
+    <tr><td>Carol</td><td>Mathematics</td><td>90</td></tr>
+    <tr><td>David</td><td>Chemistry</td><td>62</td></tr>
+    <tr><td>Emma</td><td>Mathematics</td><td>78</td></tr>
+    <tr><td>Frank</td><td class="null">NULL</td><td class="null">NULL</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">RIGHT JOIN — All courses, including those with no enrolled students</div>
+  <pre>SELECT c.name  AS course_name,
+       s.name  AS student_name,
+       e.marks
+FROM   Enrollments e
+RIGHT JOIN Courses  c ON c.id  = e.courseid
+LEFT  JOIN Students s ON s.id  = e.studentid
+ORDER BY c.name;</pre>
+  <div class="result-label">Result: (Biology appears with NULL since no student is enrolled)</div>
+  <table>
+    <tr><th>course_name</th><th>student_name</th><th>marks</th></tr>
+    <tr><td>Biology</td><td class="null">NULL</td><td class="null">NULL</td></tr>
+    <tr><td>Chemistry</td><td>Alice</td><td>85</td></tr>
+    <tr><td>Chemistry</td><td>David</td><td>62</td></tr>
+    <tr><td>Mathematics</td><td>Alice</td><td>88</td></tr>
+    <tr><td>Mathematics</td><td>Bob</td><td>74</td></tr>
+    <tr><td>Mathematics</td><td>Carol</td><td>90</td></tr>
+    <tr><td>Mathematics</td><td>Emma</td><td>78</td></tr>
+    <tr><td>Physics</td><td>Bob</td><td>76</td></tr>
+    <tr><td>Physics</td><td>Carol</td><td>91</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">JOIN + GROUP BY — Course name with total enrollment count</div>
+  <pre>SELECT   c.name      AS course_name,
+         COUNT(e.id) AS total_enrollments
+FROM     Courses     c
+JOIN     Enrollments e ON c.id = e.courseid
+GROUP BY c.id, c.name
+ORDER BY total_enrollments DESC;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>course_name</th><th>total_enrollments</th></tr>
+    <tr><td>Mathematics</td><td>4</td></tr>
+    <tr><td>Physics</td><td>2</td></tr>
+    <tr><td>Chemistry</td><td>2</td></tr>
+  </table>
+</div>
+
+
+<!-- 1.7 FILTERING -->
+<h3 id="sql-filter">1.7 Filtering — WHERE, AND, OR, LIKE, BETWEEN, IN, NOT IN</h3>
+
+<div class="query-block">
+  <div class="label">WHERE with AND — Female students older than 20</div>
+  <pre>SELECT name, gender, age
+FROM   Students
+WHERE  gender = 'Female' AND age > 20;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th><th>gender</th><th>age</th></tr>
+    <tr><td>Emma</td><td>Female</td><td>23</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">WHERE with OR — Students who are Female OR older than 22</div>
+  <pre>SELECT name, gender, age
+FROM   Students
+WHERE  gender = 'Female' OR age > 22;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th><th>gender</th><th>age</th></tr>
+    <tr><td>Alice</td><td>Female</td><td>20</td></tr>
+    <tr><td>Carol</td><td>Female</td><td>19</td></tr>
+    <tr><td>Emma</td><td>Female</td><td>23</td></tr>
+    <tr><td>Frank</td><td>Male</td><td>24</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">LIKE — Students whose name starts with 'A'</div>
+  <pre>SELECT name
+FROM   Students
+WHERE  name LIKE 'A%';</pre>
+  <div class="result-label">Result:</div>
+  <table><tr><th>name</th></tr><tr><td>Alice</td></tr></table>
+</div>
+
+<div class="query-block">
+  <div class="label">LIKE — Students whose name contains exactly 3 characters followed by 'l'</div>
+  <pre>SELECT name
+FROM   Students
+WHERE  name LIKE '%l%';</pre>
+  <div class="result-label">Result: (Alice, Carol both contain 'l')</div>
+  <table>
+    <tr><th>name</th></tr>
+    <tr><td>Alice</td></tr>
+    <tr><td>Carol</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">BETWEEN — Students aged between 19 and 22 (inclusive)</div>
+  <pre>SELECT name, age
+FROM   Students
+WHERE  age BETWEEN 19 AND 22;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th><th>age</th></tr>
+    <tr><td>Alice</td><td>20</td></tr>
+    <tr><td>Bob</td><td>22</td></tr>
+    <tr><td>Carol</td><td>19</td></tr>
+    <tr><td>David</td><td>21</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">IN — Students with specific IDs</div>
+  <pre>SELECT name
+FROM   Students
+WHERE  id IN ('S101', 'S103', 'S105');</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th></tr>
+    <tr><td>Alice</td></tr>
+    <tr><td>Carol</td></tr>
+    <tr><td>Emma</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">NOT IN — Students NOT in the specified IDs</div>
+  <pre>SELECT name
+FROM   Students
+WHERE  id NOT IN ('S101', 'S103', 'S105');</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th></tr>
+    <tr><td>Bob</td></tr>
+    <tr><td>David</td></tr>
+    <tr><td>Frank</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">WHERE + IN (subquery) — Students enrolled in Physics</div>
+  <pre>SELECT name
+FROM   Students
+WHERE  id IN (
+    SELECT studentid
+    FROM   Enrollments
+    WHERE  courseid = 'C102'
+);</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th></tr>
+    <tr><td>Bob</td></tr>
+    <tr><td>Carol</td></tr>
+  </table>
+</div>
+
+
+<!-- 1.8 DISTINCT, ORDER BY, SUBQUERY -->
+<h3 id="sql-other">1.8 DISTINCT, ORDER BY, and Subquery</h3>
+
+<div class="query-block">
+  <div class="label">DISTINCT — List unique genders</div>
+  <pre>SELECT DISTINCT gender
+FROM   Students;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>gender</th></tr>
+    <tr><td>Female</td></tr>
+    <tr><td>Male</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">DISTINCT — Courses that have at least one enrollment</div>
+  <pre>SELECT DISTINCT courseid
+FROM   Enrollments;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>courseid</th></tr>
+    <tr><td>C101</td></tr>
+    <tr><td>C102</td></tr>
+    <tr><td>C103</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">ORDER BY — Students sorted by age descending</div>
+  <pre>SELECT name, age
+FROM   Students
+ORDER BY age DESC;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th><th>age</th></tr>
+    <tr><td>Frank</td><td>24</td></tr>
+    <tr><td>Emma</td><td>23</td></tr>
+    <tr><td>Bob</td><td>22</td></tr>
+    <tr><td>David</td><td>21</td></tr>
+    <tr><td>Alice</td><td>20</td></tr>
+    <tr><td>Carol</td><td>19</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">ORDER BY — Enrollments sorted by marks descending</div>
+  <pre>SELECT studentid, courseid, marks
+FROM   Enrollments
+ORDER BY marks DESC;</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>studentid</th><th>courseid</th><th>marks</th></tr>
+    <tr><td>S103</td><td>C102</td><td>91</td></tr>
+    <tr><td>S103</td><td>C101</td><td>90</td></tr>
+    <tr><td>S101</td><td>C101</td><td>88</td></tr>
+    <tr><td>S101</td><td>C103</td><td>85</td></tr>
+    <tr><td>S105</td><td>C101</td><td>78</td></tr>
+    <tr><td>S102</td><td>C102</td><td>76</td></tr>
+    <tr><td>S102</td><td>C101</td><td>74</td></tr>
+    <tr><td>S104</td><td>C103</td><td>62</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">Subquery — Students who scored above the overall average marks (80.5)</div>
+  <pre>SELECT DISTINCT s.name, e.marks
+FROM   Students    s
+JOIN   Enrollments e ON s.id = e.studentid
+WHERE  e.marks > (SELECT AVG(marks) FROM Enrollments)
+ORDER  BY e.marks DESC;</pre>
+  <div class="result-label">Result: (avg = 80.5, so marks &gt; 80.5)</div>
+  <table>
+    <tr><th>name</th><th>marks</th></tr>
+    <tr><td>Carol</td><td>91</td></tr>
+    <tr><td>Carol</td><td>90</td></tr>
+    <tr><td>Alice</td><td>88</td></tr>
+    <tr><td>Alice</td><td>85</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">Subquery — Student who achieved the highest marks overall</div>
+  <pre>SELECT s.name, e.marks
+FROM   Students    s
+JOIN   Enrollments e ON s.id = e.studentid
+WHERE  e.marks = (SELECT MAX(marks) FROM Enrollments);</pre>
+  <div class="result-label">Result:</div>
+  <table>
+    <tr><th>name</th><th>marks</th></tr>
+    <tr><td>Carol</td><td>91</td></tr>
+  </table>
+</div>
+
+<div class="query-block">
+  <div class="label">Subquery — Course with highest number of enrollments</div>
+  <pre>SELECT name AS course_name
+FROM   Courses
+WHERE  id = (
+    SELECT   courseid
+    FROM     Enrollments
+    GROUP BY courseid
+    ORDER BY COUNT(*) DESC
+    LIMIT    1
+);</pre>
+  <div class="result-label">Result:</div>
+  <table><tr><th>course_name</th></tr><tr><td>Mathematics</td></tr></table>
+</div>
+
+
+<hr>
+
+<!-- ========================================================== -->
+<!--                   PART 2 — MongoDB                         -->
+<!-- ========================================================== -->
+<h2 id="mongo">PART 2 — MongoDB</h2>
+
+
+<!-- 2.1 INSERT DOCUMENTS -->
+<h3 id="mongo-insert">2.1 Insert Documents</h3>
+
+<div class="label">students collection</div>
+<pre>db.students.insertMany([
+    { id: "S101", name: "Alice", gender: "Female", age: 20 },
+    { id: "S102", name: "Bob",   gender: "Male",   age: 22 },
+    { id: "S103", name: "Carol", gender: "Female", age: 19 },
+    { id: "S104", name: "David", gender: "Male",   age: 21 },
+    { id: "S105", name: "Emma",  gender: "Female", age: 23 },
+    { id: "S106", name: "Frank", gender: "Male",   age: 24 }
+]);</pre>
+
+<div class="label">courses collection</div>
+<pre>db.courses.insertMany([
+    { id: "C101", name: "Mathematics", instructor: "Dr. Smith" },
+    { id: "C102", name: "Physics",     instructor: "Dr. Jones" },
+    { id: "C103", name: "Chemistry",   instructor: "Dr. Brown" },
+    { id: "C104", name: "Biology",     instructor: "Dr. White" }
+]);</pre>
+
+<div class="label">enrollments collection</div>
+<pre>db.enrollments.insertMany([
+    { id: "E001", studentid: "S101", courseid: "C101", grade: "A", marks: 88 },
+    { id: "E002", studentid: "S102", courseid: "C101", grade: "B", marks: 74 },
+    { id: "E003", studentid: "S103", courseid: "C102", grade: "A", marks: 91 },
+    { id: "E004", studentid: "S104", courseid: "C103", grade: "C", marks: 62 },
+    { id: "E005", studentid: "S105", courseid: "C101", grade: "B", marks: 78 },
+    { id: "E006", studentid: "S101", courseid: "C103", grade: "A", marks: 85 },
+    { id: "E007", studentid: "S102", courseid: "C102", grade: "B", marks: 76 },
+    { id: "E008", studentid: "S103", courseid: "C101", grade: "A", marks: 90 }
+]);</pre>
+
+
+<!-- 2.2 AGGREGATE FUNCTIONS -->
+<h3 id="mongo-agg">2.2 Aggregate Functions</h3>
+
+<div class="query-block">
+  <div class="label">COUNT — Total number of students</div>
+  <pre>db.students.countDocuments({});</pre>
+  <div class="result-label">Result:  6</div>
+</div>
+
+<div class="query-block">
+  <div class="label">COUNT — Total using aggregate</div>
+  <pre>db.enrollments.aggregate([
+    { $count: "total_enrollments" }
+]);</pre>
+  <div class="result-label">Result:  { "total_enrollments": 8 }</div>
+</div>
+
+<div class="query-block">
+  <div class="label">SUM — Total marks across all enrollments</div>
+  <pre>db.enrollments.aggregate([
+    {
+        $group: {
+            _id:         null,
+            total_marks: { $sum: "$marks" }
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:  { "_id": null, "total_marks": 644 }</div>
+</div>
+
+<div class="query-block">
+  <div class="label">MIN — Youngest student age</div>
+  <pre>db.students.aggregate([
+    {
+        $group: {
+            _id:          null,
+            youngest_age: { $min: "$age" }
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:  { "_id": null, "youngest_age": 19 }</div>
+</div>
+
+<div class="query-block">
+  <div class="label">MAX — Oldest student age</div>
+  <pre>db.students.aggregate([
+    {
+        $group: {
+            _id:        null,
+            oldest_age: { $max: "$age" }
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:  { "_id": null, "oldest_age": 24 }</div>
+</div>
+
+<div class="query-block">
+  <div class="label">AVG — Average age of all students</div>
+  <pre>db.students.aggregate([
+    {
+        $group: {
+            _id:     null,
+            avg_age: { $avg: "$age" }
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:  { "_id": null, "avg_age": 21.5 }</div>
+</div>
+
+<div class="query-block">
+  <div class="label">All aggregates together — marks summary</div>
+  <pre>db.enrollments.aggregate([
+    {
+        $group: {
+            _id:         null,
+            total_marks: { $sum:   "$marks" },
+            min_marks:   { $min:   "$marks" },
+            max_marks:   { $max:   "$marks" },
+            avg_marks:   { $avg:   "$marks" },
+            count:       { $sum:   1         }
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": null, "total_marks": 644, "min_marks": 62,
+  "max_marks": 91, "avg_marks": 80.5, "count": 8 }</pre>
+</div>
+
+
+<!-- 2.3 GROUP BY -->
+<h3 id="mongo-groupby">2.3 $group — GROUP BY equivalent</h3>
+
+<div class="query-block">
+  <div class="label">Count enrollments per course</div>
+  <pre>db.enrollments.aggregate([
+    {
+        $group: {
+            _id:               "$courseid",
+            total_enrollments: { $sum: 1 }
+        }
+    },
+    { $sort: { total_enrollments: -1 } }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": "C101", "total_enrollments": 4 }
+{ "_id": "C102", "total_enrollments": 2 }
+{ "_id": "C103", "total_enrollments": 2 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">SUM, MIN, MAX, AVG of marks grouped by course</div>
+  <pre>db.enrollments.aggregate([
+    {
+        $group: {
+            _id:         "$courseid",
+            total_marks: { $sum: "$marks" },
+            min_marks:   { $min: "$marks" },
+            max_marks:   { $max: "$marks" },
+            avg_marks:   { $avg: "$marks" }
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": "C101", "total_marks": 330, "min_marks": 74, "max_marks": 90, "avg_marks": 82.5 }
+{ "_id": "C102", "total_marks": 167, "min_marks": 76, "max_marks": 91, "avg_marks": 83.5 }
+{ "_id": "C103", "total_marks": 147, "min_marks": 62, "max_marks": 85, "avg_marks": 73.5 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">Count students by gender</div>
+  <pre>db.students.aggregate([
+    {
+        $group: {
+            _id:   "$gender",
+            count: { $sum: 1 }
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": "Female", "count": 3 }
+{ "_id": "Male",   "count": 3 }</pre>
+</div>
+
+
+<!-- 2.4 HAVING equivalent -->
+<h3 id="mongo-having">2.4 HAVING equivalent — $match after $group</h3>
+
+<div class="query-block">
+  <div class="label">Courses with more than 2 enrollments</div>
+  <pre>db.enrollments.aggregate([
+    { $group: { _id: "$courseid", total: { $sum: 1 } } },
+    { $match: { total: { $gt: 2 } } }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": "C101", "total": 4 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">Courses where average marks exceed 80</div>
+  <pre>db.enrollments.aggregate([
+    { $group: { _id: "$courseid", avg_marks: { $avg: "$marks" } } },
+    { $match: { avg_marks: { $gt: 80 } } }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": "C101", "avg_marks": 82.5 }
+{ "_id": "C102", "avg_marks": 83.5 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">Genders with average age above 21</div>
+  <pre>db.students.aggregate([
+    { $group: { _id: "$gender", avg_age: { $avg: "$age" } } },
+    { $match: { avg_age: { $gt: 21 } } }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": "Male", "avg_age": 22.33 }</pre>
+</div>
+
+
+<!-- 2.5 $lookup (JOIN) -->
+<h3 id="mongo-lookup">2.5 $lookup — JOIN equivalent</h3>
+
+<div class="query-block">
+  <div class="label">INNER JOIN equivalent — Students with enrolled course names and marks</div>
+  <pre>db.enrollments.aggregate([
+    {
+        $lookup: {
+            from:         "students",
+            localField:   "studentid",
+            foreignField: "id",
+            as:           "student"
+        }
+    },
+    { $unwind: "$student" },
+    {
+        $lookup: {
+            from:         "courses",
+            localField:   "courseid",
+            foreignField: "id",
+            as:           "course"
+        }
+    },
+    { $unwind: "$course" },
+    {
+        $project: {
+            _id:          0,
+            student_name: "$student.name",
+            course_name:  "$course.name",
+            grade:        1,
+            marks:        1
+        }
+    },
+    { $sort: { student_name: 1 } }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "student_name": "Alice", "course_name": "Mathematics", "grade": "A", "marks": 88 }
+{ "student_name": "Alice", "course_name": "Chemistry",   "grade": "A", "marks": 85 }
+{ "student_name": "Bob",   "course_name": "Mathematics", "grade": "B", "marks": 74 }
+{ "student_name": "Bob",   "course_name": "Physics",     "grade": "B", "marks": 76 }
+{ "student_name": "Carol", "course_name": "Physics",     "grade": "A", "marks": 91 }
+{ "student_name": "Carol", "course_name": "Mathematics", "grade": "A", "marks": 90 }
+{ "student_name": "David", "course_name": "Chemistry",   "grade": "C", "marks": 62 }
+{ "student_name": "Emma",  "course_name": "Mathematics", "grade": "B", "marks": 78 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">LEFT JOIN equivalent — All students including unenrolled (preserveNullAndEmptyArrays)</div>
+  <pre>db.students.aggregate([
+    {
+        $lookup: {
+            from:         "enrollments",
+            localField:   "id",
+            foreignField: "studentid",
+            as:           "enrollments"
+        }
+    },
+    { $unwind: { path: "$enrollments", preserveNullAndEmptyArrays: true } },
+    {
+        $lookup: {
+            from:         "courses",
+            localField:   "enrollments.courseid",
+            foreignField: "id",
+            as:           "course"
+        }
+    },
+    { $unwind: { path: "$course", preserveNullAndEmptyArrays: true } },
+    {
+        $project: {
+            _id:         0,
+            student_name: "$name",
+            course_name:  { $ifNull: ["$course.name", null] },
+            marks:        { $ifNull: ["$enrollments.marks", null] }
+        }
+    },
+    { $sort: { student_name: 1 } }
+]);</pre>
+  <div class="result-label">Result: (Frank appears with null values)</div>
+  <pre>{ "student_name": "Alice", "course_name": "Mathematics", "marks": 88 }
+{ "student_name": "Alice", "course_name": "Chemistry",   "marks": 85 }
+{ "student_name": "Bob",   "course_name": "Mathematics", "marks": 74 }
+{ "student_name": "Bob",   "course_name": "Physics",     "marks": 76 }
+{ "student_name": "Carol", "course_name": "Physics",     "marks": 91 }
+{ "student_name": "Carol", "course_name": "Mathematics", "marks": 90 }
+{ "student_name": "David", "course_name": "Chemistry",   "marks": 62 }
+{ "student_name": "Emma",  "course_name": "Mathematics", "marks": 78 }
+{ "student_name": "Frank", "course_name": null,          "marks": null }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">JOIN + GROUP BY — Course name with total enrollment count</div>
+  <pre>db.enrollments.aggregate([
+    {
+        $lookup: {
+            from:         "courses",
+            localField:   "courseid",
+            foreignField: "id",
+            as:           "course"
+        }
+    },
+    { $unwind: "$course" },
+    {
+        $group: {
+            _id:               "$course.name",
+            total_enrollments: { $sum: 1 }
+        }
+    },
+    { $sort: { total_enrollments: -1 } }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "_id": "Mathematics", "total_enrollments": 4 }
+{ "_id": "Physics",     "total_enrollments": 2 }
+{ "_id": "Chemistry",   "total_enrollments": 2 }</pre>
+</div>
+
+
+<!-- 2.6 FILTERING -->
+<h3 id="mongo-filter">2.6 Filtering — $match, $and, $or, $regex, $between, $in, $nin</h3>
+
+<div class="query-block">
+  <div class="label">$match with $and — Female students older than 20</div>
+  <pre>db.students.find(
+    { $and: [ { gender: "Female" }, { age: { $gt: 20 } } ] },
+    { name: 1, gender: 1, age: 1, _id: 0 }
+);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Emma", "gender": "Female", "age": 23 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">$match with $or — Female students OR age above 22</div>
+  <pre>db.students.find(
+    { $or: [ { gender: "Female" }, { age: { $gt: 22 } } ] },
+    { name: 1, gender: 1, age: 1, _id: 0 }
+);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Alice", "gender": "Female", "age": 20 }
+{ "name": "Carol", "gender": "Female", "age": 19 }
+{ "name": "Emma",  "gender": "Female", "age": 23 }
+{ "name": "Frank", "gender": "Male",   "age": 24 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">$regex — Names starting with 'A' (equivalent to LIKE 'A%')</div>
+  <pre>db.students.find(
+    { name: { $regex: "^A", $options: "i" } },
+    { name: 1, _id: 0 }
+);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Alice" }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">$regex — Names containing letter 'l' (equivalent to LIKE '%l%')</div>
+  <pre>db.students.find(
+    { name: { $regex: "l", $options: "i" } },
+    { name: 1, _id: 0 }
+);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Alice" }
+{ "name": "Carol" }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">BETWEEN equivalent — Students aged 19 to 22</div>
+  <pre>db.students.find(
+    { age: { $gte: 19, $lte: 22 } },
+    { name: 1, age: 1, _id: 0 }
+);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Alice", "age": 20 }
+{ "name": "Bob",   "age": 22 }
+{ "name": "Carol", "age": 19 }
+{ "name": "David", "age": 21 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">$in — Students with specific IDs</div>
+  <pre>db.students.find(
+    { id: { $in: ["S101", "S103", "S105"] } },
+    { name: 1, _id: 0 }
+);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Alice" }
+{ "name": "Carol" }
+{ "name": "Emma"  }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">$nin — Students NOT in the specified IDs</div>
+  <pre>db.students.find(
+    { id: { $nin: ["S101", "S103", "S105"] } },
+    { name: 1, _id: 0 }
+);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Bob"   }
+{ "name": "David" }
+{ "name": "Frank" }</pre>
+</div>
+
+
+<!-- 2.7 DISTINCT, SORT, SUBQUERY-LIKE -->
+<h3 id="mongo-other">2.7 distinct, $sort, and Subquery-like Aggregation</h3>
+
+<div class="query-block">
+  <div class="label">distinct — Unique genders (DISTINCT equivalent)</div>
+  <pre>db.students.distinct("gender");</pre>
+  <div class="result-label">Result:</div>
+  <pre>[ "Female", "Male" ]</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">distinct — Unique course IDs that have enrollments</div>
+  <pre>db.enrollments.distinct("courseid");</pre>
+  <div class="result-label">Result:</div>
+  <pre>[ "C101", "C102", "C103" ]</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">$sort — Students sorted by age descending (ORDER BY equivalent)</div>
+  <pre>db.students.find(
+    {},
+    { name: 1, age: 1, _id: 0 }
+).sort({ age: -1 });</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "name": "Frank", "age": 24 }
+{ "name": "Emma",  "age": 23 }
+{ "name": "Bob",   "age": 22 }
+{ "name": "David", "age": 21 }
+{ "name": "Alice", "age": 20 }
+{ "name": "Carol", "age": 19 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">$sort — Enrollments sorted by marks descending</div>
+  <pre>db.enrollments.find(
+    {},
+    { studentid: 1, courseid: 1, marks: 1, _id: 0 }
+).sort({ marks: -1 });</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "studentid": "S103", "courseid": "C102", "marks": 91 }
+{ "studentid": "S103", "courseid": "C101", "marks": 90 }
+{ "studentid": "S101", "courseid": "C101", "marks": 88 }
+{ "studentid": "S101", "courseid": "C103", "marks": 85 }
+{ "studentid": "S105", "courseid": "C101", "marks": 78 }
+{ "studentid": "S102", "courseid": "C102", "marks": 76 }
+{ "studentid": "S102", "courseid": "C101", "marks": 74 }
+{ "studentid": "S104", "courseid": "C103", "marks": 62 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">Subquery-like — Students who scored above the overall average (80.5)</div>
+  <pre>// Step 1: Calculate the overall average
+const avgResult = db.enrollments.aggregate([
+    { $group: { _id: null, avg_marks: { $avg: "$marks" } } }
+]).toArray();
+
+const avgMarks = avgResult[0].avg_marks; // 80.5
+
+// Step 2: Find enrollments above average, then join student names
+db.enrollments.aggregate([
+    { $match: { marks: { $gt: avgMarks } } },
+    {
+        $lookup: {
+            from:         "students",
+            localField:   "studentid",
+            foreignField: "id",
+            as:           "student"
+        }
+    },
+    { $unwind: "$student" },
+    {
+        $project: {
+            _id:          0,
+            student_name: "$student.name",
+            marks:        1
+        }
+    },
+    { $sort: { marks: -1 } }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "student_name": "Carol", "marks": 91 }
+{ "student_name": "Carol", "marks": 90 }
+{ "student_name": "Alice", "marks": 88 }
+{ "student_name": "Alice", "marks": 85 }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">Subquery-like — Student who scored the highest marks (using $group + $lookup)</div>
+  <pre>db.enrollments.aggregate([
+    { $sort: { marks: -1 } },
+    { $limit: 1 },
+    {
+        $lookup: {
+            from:         "students",
+            localField:   "studentid",
+            foreignField: "id",
+            as:           "student"
+        }
+    },
+    { $unwind: "$student" },
+    {
+        $project: {
+            _id:          0,
+            student_name: "$student.name",
+            marks:        1,
+            courseid:     1
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "student_name": "Carol", "marks": 91, "courseid": "C102" }</pre>
+</div>
+
+<div class="query-block">
+  <div class="label">Subquery-like — Students enrolled in Physics (using $lookup + $match)</div>
+  <pre>db.enrollments.aggregate([
+    {
+        $lookup: {
+            from:         "courses",
+            localField:   "courseid",
+            foreignField: "id",
+            as:           "course"
+        }
+    },
+    { $unwind: "$course" },
+    { $match: { "course.name": "Physics" } },
+    {
+        $lookup: {
+            from:         "students",
+            localField:   "studentid",
+            foreignField: "id",
+            as:           "student"
+        }
+    },
+    { $unwind: "$student" },
+    {
+        $project: {
+            _id:          0,
+            student_name: "$student.name"
+        }
+    }
+]);</pre>
+  <div class="result-label">Result:</div>
+  <pre>{ "student_name": "Carol" }
+{ "student_name": "Bob"   }</pre>
+</div>
+
+</body>
+</html>
